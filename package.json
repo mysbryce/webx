@@ -1,5 +1,5 @@
 {
-  "name": "webx",
+  "name": "webx-5m",
   "version": "0.0.1",
   "description": "Vanilla ES module UI framework and CLI for WebX projects.",
   "private": false,
@@ -7,6 +7,7 @@
   "license": "GPL-3.0-only",
   "author": "mysbryce",
   "bin": {
+    "webx-5m": "./bin/webx.js",
     "webx": "./bin/webx.js"
   },
   "scripts": {

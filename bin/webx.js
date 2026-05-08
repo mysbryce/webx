@@ -136,7 +136,7 @@ const createProject = (argv) => {
     const projectName = args[0]
 
     if (!projectName) {
-        throw new Error('Missing project name. Example: bunx webx create my-app')
+        throw new Error('Missing project name. Example: bunx webx-5m create my-app')
     }
 
     const targetDir = resolve(process.cwd(), projectName)
@@ -237,11 +237,11 @@ const generateManifest = (argv) => {
 }
 
 const printHelp = () => {
-    log.info(`${colors.bold}webx${colors.reset}`)
+    log.info(`${colors.bold}webx-5m${colors.reset}`)
     log.info('')
     log.info('Usage:')
-    log.info('  bunx webx create <name> [--repo <url>] [--branch <name>] [--no-install]')
-    log.info('  bunx webx generate [--main <component>] [--web web] [--dry-run]')
+    log.info('  bunx webx-5m create <name> [--repo <url>] [--branch <name>] [--no-install]')
+    log.info('  bunx webx-5m generate [--main <component>] [--web web] [--dry-run]')
     log.info('')
     log.info('Commands:')
     log.info('  create      Clone a WebX template from GitHub and install dependencies')

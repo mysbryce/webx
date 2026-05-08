@@ -3,12 +3,12 @@ title: Getting Started
 description: เริ่มติดตั้ง สร้างโปรเจกต์ และ sync component manifest ด้วย WebX CLI
 ---
 
-WebX CLI ออกแบบให้เรียกผ่าน `bunx webx` ได้โดยตรง มีคำสั่งหลักสำหรับสร้างโปรเจกต์ใหม่ และ sync component list เข้า `webx.json`
+WebX CLI ออกแบบให้เรียกผ่าน `bunx webx-5m` ได้โดยตรง มีคำสั่งหลักสำหรับสร้างโปรเจกต์ใหม่ และ sync component list เข้า `webx.json`
 
 ## Create Project
 
 ```bash
-bunx webx create my-app
+bunx webx-5m create my-app
 ```
 
 คำสั่งนี้จะ:
@@ -21,7 +21,7 @@ bunx webx create my-app
 ถ้าต้องการสร้างไฟล์อย่างเดียวและยังไม่ติดตั้ง dependency:
 
 ```bash
-bunx webx create my-app --no-install
+bunx webx-5m create my-app --no-install
 ```
 
 ## Generate Component Manifest
@@ -29,7 +29,7 @@ bunx webx create my-app --no-install
 หลังเพิ่มหรือลบ component ใน `web/components` ให้รัน:
 
 ```bash
-bunx webx generate
+bunx webx-5m generate
 ```
 
 คำสั่งนี้จะ scan folder ใน `web/components` ที่มีทั้ง `app.js` และ `template.html` แล้วแก้ `web/webx.json` อัตโนมัติ
@@ -58,7 +58,7 @@ Components
 ถ้าต้องการกำหนด main เอง:
 
 ```bash
-bunx webx generate --main home
+bunx webx-5m generate --main home
 ```
 
 ถ้าไม่กำหนด CLI จะใช้ค่าเดิมใน `webx.json` ก่อน ถ้าไม่มีจะเลือก `home` ถ้าพบ component ชื่อนี้ ไม่อย่างนั้นจะเลือก component แรกตามลำดับชื่อ
