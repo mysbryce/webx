@@ -1,45 +1,39 @@
-# .
+# WebX 5M Documentation
 
-This is a Next.js application generated with
-[Create Fumadocs](https://github.com/fuma-nama/fumadocs).
+This is the documentation site for WebX 5M. It is built with Next.js and Fumadocs, and the content lives in `content/docs`.
 
-Run development server:
+## Development
 
 ```bash
 npm run dev
-# or
-pnpm dev
-# or
-yarn dev
 ```
 
-Open http://localhost:3000 with your browser to see the result.
+Open `http://localhost:3000` in your browser.
 
-## Explore
+## Type Check
 
-In the project, you can see:
+```bash
+npm run types:check
+```
 
-- `lib/source.ts`: Code for content source adapter, [`loader()`](https://fumadocs.dev/docs/headless/source-api) provides the interface to access your content.
-- `lib/layout.shared.tsx`: Shared options for layouts, optional but preferred to keep.
+This generates Fumadocs MDX files, generates Next.js route types, and runs TypeScript with `--noEmit`.
 
-| Route                     | Description                                            |
-| ------------------------- | ------------------------------------------------------ |
-| `app/(home)`              | The route group for your landing page and other pages. |
-| `app/docs`                | The documentation layout and pages.                    |
-| `app/api/search/route.ts` | The Route Handler for search.                          |
+## Build
 
-### Fumadocs MDX
+```bash
+npm run build
+```
 
-A `source.config.ts` config file has been included, you can customise different options like frontmatter schema.
+## Important Files
 
-Read the [Introduction](https://fumadocs.dev/docs/mdx) for further details.
+- `content/docs`: MDX documentation pages
+- `app/docs`: Fumadocs documentation routes
+- `app/(home)`: Landing page route
+- `components/mdx.tsx`: MDX component mapping
+- `lib/source.ts`: Fumadocs content source
+- `source.config.ts`: Fumadocs MDX collection config
+- `public/fonts`: Local LINE Seed Sans TH fonts used by the site
 
-## Learn More
+## Style
 
-To learn more about Next.js and Fumadocs, take a look at the following
-resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js
-  features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [Fumadocs](https://fumadocs.dev) - learn about Fumadocs
+The documentation site uses a black and white visual direction and local fonts from `public/fonts`.
