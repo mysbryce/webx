@@ -1,0 +1,86 @@
+---
+title: Lifecycle
+description: onMounted, onUnmounted และ cleanup ของ component instance
+---
+
+WebX รองรับ lifecycle hook ใน `export default {}` เพื่อรันงานเมื่อ component mount และ unmount
+
+```js
+export default {
+  onMounted() {
+    console.log('Home mounted:', this.data.name)
+  },
+  onUnmounted() {
+    console.log('Home unmounted')
+  }
+}
+```
+
+## `onMounted`
+
+รันหลัง component ถูกใส่เข้า DOM แล้ว โดย runtime queue ผ่าน microtask
+
+```js
+export default {
+  onMounted() {
+    this.refs.nameInput?.focus()
+  }
+}
+```
+
+ใช้ได้กับ function, string method name หรือ array:
+
+```js
+export default {
+  method: {
+    boot() {
+      console.log('boot')
+    }
+  },
+  onMounted: 'boot'
+}
+```
+
+```js
+export default {
+  onMounted: [
+    function() {
+      console.log('first')
+    },
+    'boot'
+  ],
+  method: {
+    boot() {
+      console.log('second')
+    }
+  }
+}
+```
+
+## `onUnmounted`
+
+รันเมื่อ root element ของ component ถูก remove ออกจาก DOM โดย MutationObserver ของ runtime จะตรวจ removed nodes แล้วเรียก cleanup
+
+```js
+export default {
+  onUnmounted() {
+    console.log('component removed')
+  }
+}
+```
+
+Runtime จะเรียก disposer ที่ instance เก็บไว้ เช่น CFX event unbind และ store subscription unbind
+
+## Debug Instances
+
+เมื่อ component mount แล้ว runtime จะเก็บ instance ไว้ที่:
+
+```js
+window.__WEBX_INSTANCES__
+```
+
+ใช้ debug ใน browser console ได้ เช่น:
+
+```js
+window.__WEBX_INSTANCES__.map((instance) => instance.name)
+```

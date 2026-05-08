@@ -1,0 +1,163 @@
+---
+title: Examples
+description: ตัวอย่าง component แบบรวม features หลักของ WebX
+---
+
+หน้านี้รวมตัวอย่างจาก component ปัจจุบันของโปรเจกต์
+
+## Home Component
+
+`web/components/home/app.js`
+
+```js
+import z from 'zod'
+import { useAppStore } from '@stores/appStore.js'
+
+const phases = ['active', 'waiting', 'off']
+
+export default {
+  template: 'Home',
+  stores: {
+    app: useAppStore
+  },
+  data: {
+    name: 'WebX Component',
+    phase: 'active',
+    listVisible: true,
+    note: 'Type here and state follows.',
+    list: [
+      { id: 1, name: 'Item 1' },
+      { id: 2, name: 'Item 2' },
+      { id: 3, name: 'Item 3' }
+    ]
+  },
+  method: {
+    nextPhase() {
+      const currentIndex = phases.indexOf(this.data.phase)
+      this.data.phase = phases[(currentIndex + 1) % phases.length]
+    },
+    addItem() {
+      const nextId = this.data.list.length + 1
+      this.data.list = [
+        ...this.data.list,
+        { id: nextId, name: `Item ${nextId}` }
+      ]
+    },
+    removeItem() {
+      this.data.list = this.data.list.slice(0, -1)
+    }
+  },
+  onCfx: {
+    'app:updateTitle': {
+      schema: z.string(),
+      handler(newTitle) {
+        this.data.name = newTitle
+      }
+    }
+  },
+  onMounted() {
+    console.log('Home mounted:', this.data.name)
+  }
+}
+```
+
+`web/components/home/template.html`
+
+```html
+<template>
+  <div class="home">
+    <h1>Home</h1>
+    <p>Current phase: {{ phase }}</p>
+    <p>Local title: {{ name }}</p>
+    <p>Shared title: {{ app.sharedTitle }}</p>
+
+    <Counter :title="name" />
+    <Counter :title="app.sharedTitle" />
+
+    <input sync="name" />
+    <select sync="phase">
+      <option value="active">active</option>
+      <option value="waiting">waiting</option>
+      <option value="off">off</option>
+    </select>
+
+    <button @click="nextPhase">Next phase</button>
+    <button @click="addItem">Add item</button>
+    <button @click="removeItem">Remove item</button>
+
+    <for data="listVisible ? list : []" as="item" key="item.id" transition="flow" transition-duration="220">
+      <div class="demo-item">ID ({{ item.id }}) {{ item.name }}</div>
+    </for>
+
+    <if data="phase === 'active'" transition="flow" transition-duration="220">
+      <div class="state-panel">Active</div>
+    </if>
+    <elseif data="phase === 'waiting'" transition="flow" transition-duration="220">
+      <div class="state-panel">Waiting</div>
+    </elseif>
+    <else transition="flow" transition-duration="220">
+      <div class="state-panel">Off</div>
+    </else>
+  </div>
+</template>
+```
+
+## Counter Component
+
+```js
+import z from 'zod'
+import { useAppStore } from '@stores/appStore.js'
+
+export default {
+  template: 'Counter',
+  stores: {
+    app: useAppStore
+  },
+  props: {
+    title: z.string()
+  },
+  data: {
+    count: 0
+  },
+  method: {
+    increment() {
+      this.data.count++
+    },
+    incrementShared() {
+      this.app.incrementSharedCount()
+    },
+    async fetchCounter() {
+      const response = await this.cfx.call('counter:getValue', {
+        title: this.props.title,
+        count: this.data.count
+      }, {
+        ok: true,
+        value: this.data.count
+      })
+
+      console.log(response)
+    }
+  },
+  watch: {
+    count(value, previousValue) {
+      console.log('count changed:', previousValue, value)
+    },
+    title(value, previousValue) {
+      console.log('title prop changed:', previousValue, value)
+    }
+  }
+}
+```
+
+```html
+<template>
+  <div class="counter">
+    <h1>{{ title }}</h1>
+    <p>{{ count }}</p>
+    <p>Shared count: {{ app.sharedCount }}</p>
+    <button @click="increment">Increment</button>
+    <button @click="incrementShared">Increment shared</button>
+    <button @click="fetchCounter">Call CFX</button>
+  </div>
+</template>
+```

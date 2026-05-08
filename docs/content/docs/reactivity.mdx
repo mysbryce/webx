@@ -1,0 +1,111 @@
+---
+title: Reactivity
+description: Reactive data, props, watchers, scheduler และ dependency-based DOM updates
+---
+
+WebX ใช้ `Proxy` สำหรับ reactive `data`, `props` และ store state เมื่อค่าเปลี่ยน runtime จะ queue update ผ่าน scheduler แล้ว flush binding ที่ dependency ตรงกับ key ที่เปลี่ยน
+
+## Reactive Data
+
+```js
+export default {
+  data: {
+    count: 0,
+    title: 'Counter'
+  },
+  method: {
+    increment() {
+      this.data.count++
+    }
+  }
+}
+```
+
+เมื่อ `count` เปลี่ยน เฉพาะ binding ที่ depend กับ `count` จะ update เช่น `{{ count }}` หรือ `:disabled="count <= 0"`
+
+## Reactive Props
+
+Props ถูก validate ก่อน แล้ว wrap ด้วย Proxy เช่นเดียวกับ data
+
+```js
+export default {
+  props: {
+    title: z.string()
+  },
+  watch: {
+    title(value, previousValue) {
+      console.log(previousValue, value)
+    }
+  }
+}
+```
+
+เมื่อ parent ส่ง `<Counter :title="name" />` แล้ว `name` เปลี่ยน child prop `title` จะเปลี่ยนและ trigger watcher
+
+## Watch Option
+
+เขียน watcher ได้หลายรูปแบบ:
+
+```js
+export default {
+  watch: {
+    count(value, previousValue) {
+      console.log('count changed:', previousValue, value)
+    },
+    'data.count'(value, previousValue) {
+      console.log('data count changed:', previousValue, value)
+    },
+    title(value, previousValue) {
+      console.log('prop title changed:', previousValue, value)
+    },
+    'props.title'(value, previousValue) {
+      console.log('props title changed:', previousValue, value)
+    },
+    'app.sharedCount'(value, previousValue) {
+      console.log('store changed:', previousValue, value)
+    }
+  }
+}
+```
+
+สำหรับ store watcher path จะเป็น `<storeAlias>.<key>` เช่น `app.sharedTitle`
+
+## Runtime Watch
+
+เพิ่ม watcher ระหว่าง runtime ได้ด้วย `this.watch`
+
+```js
+export default {
+  onMounted() {
+    const stop = this.watch('count', (value) => {
+      console.log('runtime count:', value)
+    })
+
+    this.disposers.push(stop)
+  }
+}
+```
+
+## Scheduler
+
+เมื่อ state เปลี่ยนหลายครั้งใน tick เดียวกัน runtime จะ batch update ผ่าน microtask เพื่อลด DOM write ที่ไม่จำเป็น
+
+```js
+this.data.count++
+this.data.count++
+this.data.count++
+```
+
+DOM binding ของ `count` จะถูก flush ในรอบ scheduler เดียว
+
+## Dependency Detection
+
+Runtime อ่าน dependency จาก identifier ใน expression แล้วเทียบกับ key ใน `data`, `props` และ store alias
+
+```html
+<p>{{ count }}</p>
+<p>{{ title }}</p>
+<p>{{ app.sharedCount }}</p>
+```
+
+ข้อควรรู้: dependency detection เป็นแบบ runtime/simple identifier จึงเหมาะกับ expression ตรงไปตรงมา หาก expression ซับซ้อนมากควรแยก logic ไปไว้ใน method หรือ store action

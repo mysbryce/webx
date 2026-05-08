@@ -1,0 +1,163 @@
+---
+title: Components
+description: วิธีเขียน component, props, data, methods, child component และ instance context
+---
+
+Component ของ WebX คือ object ที่ export default จาก `app.js` และผูกกับ markup ใน `template.html`
+
+```js
+import z from 'zod'
+
+export default {
+  template: 'Counter',
+  props: {
+    title: z.string()
+  },
+  data: {
+    count: 0
+  },
+  method: {
+    increment() {
+      this.data.count++
+    }
+  }
+}
+```
+
+## `template`
+
+`template` คือชื่อ component tag ที่ parent ใช้เรียก
+
+```js
+export default {
+  template: 'Counter'
+}
+```
+
+```html
+<Counter title="Static title" />
+<Counter :title="name" />
+```
+
+## `data`
+
+`data` เป็น state ภายใน component และถูก wrap ด้วย Proxy
+
+```js
+export default {
+  data: {
+    name: 'WebX Component',
+    count: 0
+  }
+}
+```
+
+ใน template เข้าถึงได้ตรง ๆ:
+
+```html
+<h1>{{ name }}</h1>
+<p>{{ count }}</p>
+```
+
+สามารถใช้ `data` เป็น function ได้หากต้องการสร้าง object ใหม่ต่อ instance:
+
+```js
+export default {
+  data() {
+    return {
+      count: 0
+    }
+  }
+}
+```
+
+## `method` และ `methods`
+
+WebX รองรับทั้ง `method` และ `methods` โดย runtime จะ bind `this` ให้เป็น instance
+
+```js
+export default {
+  method: {
+    increment() {
+      this.data.count++
+    },
+    reset() {
+      this.data.count = 0
+    }
+  }
+}
+```
+
+เรียกใน template ด้วย action directive:
+
+```html
+<button @click="increment">Increment</button>
+<button @click="reset()">Reset</button>
+```
+
+## Instance Context
+
+ใน method, watcher และ lifecycle สามารถใช้ property เหล่านี้ผ่าน `this`
+
+- `this.data` reactive data
+- `this.props` reactive props
+- `this.refs` element refs จาก `:ref`
+- `this.cfx` namespace สำหรับ NUI call
+- `this.watch(path, callback)` เพิ่ม watcher runtime
+- `this.<storeAlias>` store ที่ bind จาก `stores`
+- `this.methods` method ที่ bind แล้ว
+
+## Child Components
+
+เพิ่ม component ลูกใน `webx.json`
+
+```json
+{
+  "main": "home",
+  "components": ["counter"]
+}
+```
+
+ใน component ลูกกำหนด template name:
+
+```js
+export default {
+  template: 'Counter'
+}
+```
+
+จากนั้น parent เรียกใช้ได้เหมือน HTML tag:
+
+```html
+<Counter :title="name" />
+```
+
+เมื่อ prop ที่ bind ด้วย `:` เปลี่ยน runtime จะอัปเดต `childInstance.props` และ trigger watcher ของ prop นั้น
+
+## Example
+
+```js
+import z from 'zod'
+import { useAppStore } from '@stores/appStore.js'
+
+export default {
+  template: 'Counter',
+  stores: {
+    app: useAppStore
+  },
+  props: {
+    title: z.string()
+  },
+  data: {
+    count: 0
+  },
+  method: {
+    increment() {
+      this.data.count++
+    },
+    incrementShared() {
+      this.app.incrementSharedCount()
+    }
+  }
+}
+```

@@ -1,0 +1,150 @@
+---
+title: Control Flow
+description: ใช้ for, if, elseif, else และ transition แบบอัปเดตเฉพาะ element ที่เปลี่ยน
+---
+
+WebX มี control flow เป็น custom tag ใน template:
+
+- `<for>` สำหรับ render list
+- `<if>` สำหรับ branch แรก
+- `<elseif>` สำหรับ branch ถัดไป
+- `<else>` สำหรับ fallback
+
+Runtime จะ replace control tag ด้วย comment anchor และจัดการ DOM node ระหว่าง anchor แทนการ render parent ใหม่ทั้งหมด
+
+## For
+
+```html
+<for data="list" as="item" key="item.id">
+  <div class="demo-item">ID ({{ item.id }}) {{ item.name }}</div>
+</for>
+```
+
+Attribute ที่ใช้ได้:
+
+- `data`, `of`, `in` คือ expression ที่ต้องคืน array
+- `as` คือชื่อตัวแปร item ค่าเริ่มต้นคือ `item`
+- `index` คือชื่อตัวแปร index ค่าเริ่มต้นคือ `$index`
+- `key` คือ expression สำหรับ key ของแต่ละ item
+
+ตัวอย่างใช้ index:
+
+```html
+<for data="list" as="item" index="index" key="item.id">
+  <p>{{ index + 1 }}. {{ item.name }}</p>
+</for>
+```
+
+## Keyed Update
+
+เมื่อ list เปลี่ยน WebX จะเทียบ key ของ item เดิมกับ item ใหม่:
+
+- item ที่ key เดิมและข้อมูลเดิมจะถูกย้ายตำแหน่งได้โดยไม่สร้าง DOM ใหม่
+- item ที่ key เดิมแต่ข้อมูลเปลี่ยนจะอัปเดตเฉพาะ binding ภายใน item
+- item ใหม่จะ mount เฉพาะ item นั้น
+- item ที่หายไปจะเล่น transition ออกเฉพาะ item นั้น
+
+ควรกำหนด `key` เสมอเพื่อให้ animation และ diff เสถียร
+
+```html
+<for data="todos" as="todo" key="todo.id">
+  <TodoItem :title="todo.title" />
+</for>
+```
+
+## If / Elseif / Else
+
+```html
+<if data="phase === 'active'">
+  <div class="state-panel">Active</div>
+</if>
+<elseif data="phase === 'waiting'">
+  <div class="state-panel">Waiting</div>
+</elseif>
+<else>
+  <div class="state-panel">Off</div>
+</else>
+```
+
+WebX จะ collect chain ที่อยู่ติดกัน จากนั้น render เฉพาะ branch ที่ตรงเงื่อนไขแรก
+
+## Transitions
+
+ใช้ `transition` เพื่อกำหนดชื่อ class ที่จะใส่ตอนเข้าและออก
+
+```html
+<for
+  data="listVisible ? list : []"
+  as="item"
+  key="item.id"
+  transition="flow"
+  transition-duration="220"
+>
+  <div class="demo-item">{{ item.name }}</div>
+</for>
+```
+
+เมื่อ `transition="flow"` runtime จะใช้ class:
+
+- `flow-active` ตอน element เข้า
+- `flow-off` ตอน element ออก
+
+กำหนด class เองได้:
+
+```html
+<if
+  data="isOpen"
+  transition="panel"
+  active-class="panel-in"
+  off-class="panel-out"
+  transition-duration="180"
+>
+  <div class="panel">Open</div>
+</if>
+```
+
+CSS ตัวอย่าง:
+
+```css
+.flow-active {
+  animation: flow-in 220ms ease-out both;
+}
+
+.flow-off {
+  animation: flow-out 220ms ease-in both;
+}
+
+@keyframes flow-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes flow-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(8px) scale(.98);
+  }
+}
+```
+
+เพราะ scoped CSS ของ WebX เปลี่ยนชื่อ class ให้ runtime จะ map `flow-active` และ `flow-off` ไปเป็นชื่อ class ที่ถูก scope แล้วอัตโนมัติ
+
+## Legacy Inline For
+
+Runtime ยังรองรับรูปแบบเดิมได้:
+
+```html
+<div w-for="item in list" key="item.id">{{ item.name }}</div>
+```
+
+แต่แนะนำให้ใช้ `<for>` เพื่ออ่านง่ายและควบคุม transition ได้ชัดกว่า

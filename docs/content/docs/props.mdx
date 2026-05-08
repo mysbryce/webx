@@ -1,0 +1,89 @@
+---
+title: Props and Zod
+description: กำหนด props, bind props, validate ด้วย Zod และแสดง error overlay
+---
+
+WebX ใช้ Zod เป็น schema สำหรับ validate props ตอนสร้าง component
+
+```js
+import z from 'zod'
+
+export default {
+  template: 'Counter',
+  props: {
+    title: z.string()
+  }
+}
+```
+
+หรือใช้ schema object โดยตรง:
+
+```js
+export default {
+  props: z.object({
+    title: z.string(),
+    count: z.number().default(0)
+  })
+}
+```
+
+## Static Props
+
+```html
+<Counter title="Hello" />
+<Counter count="3" />
+<Counter active="true" />
+```
+
+ค่า static จะถูก parse ก่อน validate:
+
+- `""` เป็น `true`
+- `"true"` และ `"false"` เป็น boolean
+- `"null"` เป็น `null`
+- string ที่เป็น number จะเป็น number
+- JSON ที่ parse ได้จะเป็น object หรือ array
+- ที่เหลือเป็น string
+
+## Dynamic Props
+
+ใช้ `:` เพื่อส่ง expression จาก parent
+
+```html
+<Counter :title="name" />
+<Counter :title="app.sharedTitle" />
+```
+
+เมื่อ parent expression เปลี่ยน child prop จะ update ผ่าน reactive props
+
+## Error Overlay
+
+ถ้า props ไม่ตรง schema runtime จะ throw error ที่มีข้อมูล:
+
+- title: `WebX Props Error`
+- message: component ที่ props ผิด
+- details: list ของ Zod issues
+
+ตัวอย่าง:
+
+```html
+<Counter :title="123" />
+```
+
+ถ้า `title` ต้องเป็น string overlay จะเด้งขึ้นบนหน้าเว็บด้านล่างเพื่อบอกว่า prop ไหนผิด
+
+## Recommended Patterns
+
+ใช้ Zod ให้บอก contract ของ component ให้ชัด:
+
+```js
+props: {
+  title: z.string().min(1),
+  disabled: z.boolean().default(false),
+  items: z.array(z.object({
+    id: z.number(),
+    name: z.string()
+  })).default([])
+}
+```
+
+สำหรับ component ที่ใช้กับข้อมูลจาก FiveM/NUI ควร validate props ฝั่ง UI และ validate payload ฝั่ง `onCfx` ด้วย เพื่อกันข้อมูลผิดรูปแบบตั้งแต่ขอบระบบ

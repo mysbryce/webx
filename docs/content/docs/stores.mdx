@@ -1,0 +1,93 @@
+---
+title: Stores
+description: สร้าง shared state แบบ Zustand-like ด้วย createStore และใช้ผ่าน useSomething
+---
+
+WebX มี store API สำหรับ state ที่ต้องใช้ร่วมกันหลาย component รูปแบบคล้าย Zustand คือสร้างไฟล์ store แล้ว export ชื่อ `useSomething`
+
+```js
+import { createStore } from '@wbx/core/store.js'
+
+export const useAppStore = createStore((set) => ({
+  sharedTitle: 'Shared title',
+  sharedCount: 0,
+  toggleSharedTitle() {
+    set((state) => ({
+      sharedTitle: state.sharedTitle === 'Shared title'
+        ? 'Updated shared title'
+        : 'Shared title'
+    }))
+  },
+  incrementSharedCount() {
+    set((state) => ({
+      sharedCount: state.sharedCount + 1
+    }))
+  }
+}))
+```
+
+## Bind Store to Component
+
+ใน component import store แล้วใส่ใน `stores`
+
+```js
+import { useAppStore } from '@stores/appStore.js'
+
+export default {
+  stores: {
+    app: useAppStore
+  }
+}
+```
+
+จากนั้นใช้งานผ่าน alias ได้ทั้งใน method และ template
+
+```js
+export default {
+  method: {
+    incrementSharedCount() {
+      this.app.incrementSharedCount()
+    }
+  }
+}
+```
+
+```html
+<p>Shared title: {{ app.sharedTitle }}</p>
+<p>Shared count: {{ app.sharedCount }}</p>
+<button @click="incrementSharedCount">Increment shared count</button>
+```
+
+## Store API
+
+store ที่สร้างด้วย `createStore` มี API เหล่านี้:
+
+- `setState(partial)` update state ด้วย object หรือ function
+- `getState()` คืน store object ปัจจุบัน
+- `subscribe(callback)` subscribe การเปลี่ยนค่า
+- `watch(callback)` alias ของ subscribe
+
+```js
+const unsubscribe = useAppStore.subscribe((key, value, previousValue) => {
+  console.log(key, previousValue, value)
+})
+
+unsubscribe()
+```
+
+## Watch Store in Component
+
+```js
+export default {
+  stores: {
+    app: useAppStore
+  },
+  watch: {
+    'app.sharedTitle'(value, previousValue) {
+      console.log('shared title:', previousValue, value)
+    }
+  }
+}
+```
+
+เมื่อ store update component ที่ bind store นั้นจะได้รับ update และ DOM binding ที่ใช้ store alias จะ refresh

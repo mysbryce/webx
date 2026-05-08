@@ -1,0 +1,84 @@
+---
+title: Errors and Debugging
+description: Error overlay, expression error, props error และเครื่องมือ debug runtime
+---
+
+WebX แสดง error overlay บนหน้าเว็บเมื่อ runtime เจอ error ที่ส่งผ่าน `reportError`
+
+ตำแหน่ง overlay อยู่มุมล่างของหน้าเว็บเพื่อให้เห็น error โดยไม่ต้องเปิด console เสมอ
+
+## Error Types
+
+### Props Error
+
+เกิดเมื่อ props ไม่ผ่าน Zod schema
+
+```txt
+WebX Props Error
+Invalid props for <Counter>
+title: Expected string, received number
+```
+
+### Expression Error
+
+เกิดเมื่อ evaluate expression ใน template หรือ directive ไม่สำเร็จ
+
+```html
+<p>{{ missing.value }}</p>
+```
+
+### Assignment Error
+
+เกิดเมื่อ `sync` assign ค่าไปยัง expression ไม่ได้
+
+```html
+<input sync="someCall()" />
+```
+
+ควรใช้ path ที่ assign ได้ เช่น `name`, `data.name`, `app.sharedTitle`
+
+### CFX Event Error
+
+เกิดเมื่อ payload จาก NUI message ไม่ผ่าน schema หรือ handler throw error
+
+## Debug Checklist
+
+ถ้า DOM ไม่ update:
+
+- ตรวจว่า state ที่เปลี่ยนอยู่ใน `data`, `props` หรือ store alias
+- ตรวจ expression ว่าอ้าง key ตรงกับ state จริง
+- ถ้าเป็น list ให้ใส่ `key` ที่เสถียร
+- ถ้าเป็น child prop ให้ใช้ dynamic prop ด้วย `:`
+
+ถ้า lifecycle ไม่ขึ้น console:
+
+- ตรวจว่า component ถูก render จริง
+- เปิด browser console แล้วดู `window.__WEBX_INSTANCES__`
+- ตรวจว่า hook อยู่ใน `export default {}` ของ component ที่ถูก mount
+
+ถ้า style ไม่ทำงาน:
+
+- ตรวจว่ามี `style.css` อยู่ข้าง component หรือใช้ `<style scoped>`
+- ตรวจว่า class ใน template ตรงกับ selector
+- ถ้าต้องการ global style ให้ใช้ `:global(...)`
+
+## Inspect Instances
+
+```js
+window.__WEBX_INSTANCES__
+```
+
+ตัวอย่างหา instance ชื่อ `counter`:
+
+```js
+window.__WEBX_INSTANCES__.filter((instance) => instance.name === 'counter')
+```
+
+ดู state:
+
+```js
+const counter = window.__WEBX_INSTANCES__.find((instance) => instance.name === 'counter')
+counter.data
+counter.props
+counter.refs
+```

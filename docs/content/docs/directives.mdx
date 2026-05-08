@@ -1,0 +1,170 @@
+---
+title: Directives
+description: Built-in directives, event modifiers, dynamic attributes และ custom directives
+---
+
+WebX แยก prefix ของ directive ตามหน้าที่:
+
+- `@` สำหรับ action และ event เช่น `@click`, `@keyup.enter`
+- `:` สำหรับ JavaScript expression หรือ binding เช่น `:title`, `:show`
+
+ไม่ใช้ prefix `w-` เป็น public API หลักแล้ว แม้ runtime ยังมี fallback สำหรับของเดิมบางส่วน
+
+## Events
+
+ใช้ `@event="expression"`
+
+```html
+<button @click="increment">Increment</button>
+<button @click="count++">Inline update</button>
+<input @input="name = $event.target.value" />
+```
+
+ถ้า expression คืนค่าเป็น function runtime จะเรียก function นั้นด้วย event
+
+```html
+<button @click="increment">Increment</button>
+```
+
+## Event Modifiers
+
+รองรับ modifier สำหรับ listener options และ guard
+
+```html
+<form @submit.prevent="save"></form>
+<button @click.stop="open">Open</button>
+<button @click.once="boot">Boot once</button>
+<input @keyup.enter="submit" />
+```
+
+Modifier ที่รองรับ:
+
+- listener options: `capture`, `once`, `passive`
+- event guard: `prevent`, `stop`, `self`
+- key aliases: `enter`, `esc`, `escape`, `tab`, `space`, `up`, `down`, `left`, `right`, `delete`, `backspace`
+- key modifiers: `ctrl`, `shift`, `alt`, `meta`
+
+## Dynamic Attributes
+
+ใช้ `:attribute="expression"` เพื่อผูก attribute หรือ property เข้ากับ state
+
+```html
+<button :disabled="count <= 0">Remove</button>
+<input :value="name" />
+<img :src="avatarUrl" :alt="name" />
+```
+
+Boolean attributes เช่น `disabled`, `checked`, `hidden`, `required` จะถูก toggle ตาม truthy/falsy
+
+## Built-in Expression Directives
+
+### `:text`
+
+ตั้ง `textContent`
+
+```html
+<p :text="name"></p>
+```
+
+### `:html`
+
+ตั้ง `innerHTML`
+
+```html
+<div :html="content"></div>
+```
+
+ควรใช้กับ HTML ที่เชื่อถือได้เท่านั้น
+
+### `:show`
+
+ซ่อนหรือแสดง element ด้วย `display`
+
+```html
+<section :show="listVisible">...</section>
+```
+
+### `:class`
+
+รับ string, array หรือ object
+
+```html
+<div :class="{ active: phase === 'active', muted: phase === 'off' }"></div>
+<div :class="['panel', phase]"></div>
+```
+
+### `:style`
+
+รับ string หรือ object
+
+```html
+<div :style="{ opacity: listVisible ? 1 : 0.5 }"></div>
+```
+
+### `:ref`
+
+บันทึก element ลง `this.refs`
+
+```html
+<input :ref="'nameInput'" />
+```
+
+```js
+export default {
+  onMounted() {
+    this.refs.nameInput?.focus()
+  }
+}
+```
+
+### `:effect`
+
+ผูก expression ให้ re-run เมื่อ dependency เปลี่ยน เหมาะกับงาน side effect ขนาดเล็ก
+
+```html
+<div :effect="console.log(count)"></div>
+```
+
+### `:cloak`
+
+ลบ attribute cloak หลัง directive bind เสร็จ
+
+```html
+<div :cloak>...</div>
+```
+
+## Custom Directives
+
+เพิ่ม directive global ที่ `web/directives/index.js`
+
+```js
+export default {
+  focus(el) {
+    queueMicrotask(() => el.focus())
+  },
+
+  tooltip(el, expression, instance, { evaluate }) {
+    el.title = evaluate(expression, instance)
+  }
+}
+```
+
+ใช้งานใน template:
+
+```html
+<input :focus />
+<button :tooltip="'Save changes'">Save</button>
+```
+
+Custom directive จะถูกรวมกับ built-in directive และ directive ใน component option
+
+```js
+export default {
+  directives: {
+    pin(el) {
+      el.style.position = 'sticky'
+      el.style.top = '0'
+    }
+  }
+}
+```

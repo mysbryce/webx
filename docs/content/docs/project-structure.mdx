@@ -1,0 +1,109 @@
+---
+title: Project Structure
+description: โครงสร้างไฟล์ของ WebX และหน้าที่ของแต่ละส่วน
+---
+
+โครงสร้างปัจจุบันแยก runtime, component, store และ directive ออกจากกันเพื่อให้แก้ไขง่าย
+
+```txt
+web/
+  index.html
+  webx.json
+  components/
+    home/
+      app.js
+      template.html
+      style.css
+    counter/
+      app.js
+      template.html
+      style.css
+  directives/
+    index.js
+  stores/
+    appStore.js
+  wbx/
+    app.js
+    core/
+      bindings.js
+      cfx.js
+      component.js
+      controlFlow.js
+      directives.js
+      errorOverlay.js
+      evaluator.js
+      lifecycle.js
+      props.js
+      reactivity.js
+      scheduler.js
+      store.js
+      styles.js
+    types/
+      essentials.js
+    utils/
+      getFileContent.js
+      render.js
+```
+
+## Application Files
+
+`web/index.html` คือ entry HTML และกำหนด import map
+
+`web/webx.json` คือ app manifest สำหรับบอก main component และ component ที่ต้อง register
+
+`web/wbx/app.js` คือ runtime entry ที่อ่าน manifest, validate config, โหลด component แล้ว render ลงใน `#app`
+
+## Component Files
+
+แต่ละ component มีไฟล์หลักสามแบบ:
+
+- `app.js` กำหนด state, props, method, watch, store, lifecycle และ CFX events
+- `template.html` มี `<template>` เป็น root สำหรับ markup
+- `style.css` เป็น style ภายนอกของ component และถูก scope ด้วย class rewrite
+
+นอกจากนี้ `template.html` ยังสามารถมี `<style scoped>` ในไฟล์เดียวกันได้
+
+```html
+<template>
+  <section class="panel">...</section>
+</template>
+
+<style scoped>
+.panel {
+  border: 1px solid #d0d5dd;
+}
+</style>
+```
+
+## Core Runtime
+
+ไฟล์ใน `web/wbx/core` ถูกแบ่งตาม responsibility:
+
+- `bindings.js` ดูแล interpolation และ `sync`
+- `directives.js` ดูแล `@event`, `:bind`, built-in directive และ custom directive
+- `controlFlow.js` ดูแล `<for>`, `<if>`, `<elseif>`, `<else>`
+- `reactivity.js` สร้าง reactive `data` และ `props` ด้วย Proxy
+- `store.js` สร้าง shared store แบบ Zustand-like
+- `props.js` parse และ validate props ด้วย Zod
+- `styles.js` scope CSS ด้วยการเปลี่ยนชื่อ class
+- `lifecycle.js` รัน `onMounted` และ `onUnmounted`
+- `cfx.js` รวม NUI message listener และ `cfx.call`
+- `errorOverlay.js` แสดง error overlay บนหน้าเว็บ
+
+## Naming Rule
+
+ชื่อ folder component เป็นชื่อที่ runtime ใช้โหลดไฟล์ เช่น `counter` จะโหลดจาก `@components/counter/app.js`
+
+ชื่อ tag ใน template มาจากค่า `template` ที่ export ใน component:
+
+```js
+export default {
+  template: 'Counter'
+}
+```
+
+เรียกใช้ใน parent:
+
+```html
+<Counter :title="name" />
+```

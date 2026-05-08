@@ -1,0 +1,111 @@
+---
+title: Templates
+description: Template syntax, interpolation, expression scope, props binding และ sync
+---
+
+ทุก `template.html` ต้องมี `<template>` ครอบ markup หลัก
+
+```html
+<template>
+  <div class="home">
+    <h1>{{ name }}</h1>
+  </div>
+</template>
+```
+
+Runtime จะ clone content ข้างใน `<template>` แล้ว bind text node, form model, directive และ child component
+
+## Interpolation
+
+ใช้ `{{ expression }}` ใน text node เพื่อแสดงค่าจาก data, props, store หรือ method result
+
+```html
+<p>{{ name }}</p>
+<p>{{ count + 1 }}</p>
+<p>{{ app.sharedTitle }}</p>
+```
+
+Expression ถูก evaluate ด้วย scope ของ component จึงเขียนชื่อ state ได้ตรง ๆ:
+
+```html
+<p>{{ phase === 'active' ? 'Active' : 'Inactive' }}</p>
+```
+
+## Expression Scope
+
+ใน template expression สามารถเข้าถึง:
+
+- `data` และ key ใน `data` โดยตรง เช่น `name`
+- `props` และ key ใน `props` โดยตรง เช่น `title`
+- `stores` และ store alias เช่น `app.sharedCount`
+- method เช่น `increment`
+- `cfx`
+- `watch`
+- local variable จาก `<for>` เช่น `item`, `$index`
+- `$event` เฉพาะ event handler
+
+## Static Props
+
+ค่าปกติจะถูก parse ให้เป็น boolean, number, null, JSON หรือ string
+
+```html
+<Counter title="Hello" />
+<Panel open="true" />
+<Badge count="3" />
+```
+
+## Dynamic Props
+
+ใช้ `:` เมื่อต้องการส่ง expression จาก parent
+
+```html
+<Counter :title="name" />
+<Counter :title="app.sharedTitle" />
+```
+
+เมื่อตัวแปรใน parent เปลี่ยน prop ของ child จะอัปเดตตาม
+
+## Two-way Binding ด้วย `sync`
+
+`sync` ใช้กับ `input`, `select`, `textarea`, checkbox, radio และ multiple select เพื่ออัปเดตค่าเข้า state อัตโนมัติ
+
+```html
+<input sync="name" />
+<textarea sync="note"></textarea>
+
+<select sync="phase">
+  <option value="active">active</option>
+  <option value="waiting">waiting</option>
+  <option value="off">off</option>
+</select>
+
+<input type="checkbox" sync="listVisible" />
+```
+
+รองรับ path ที่ assign ได้ เช่น store alias:
+
+```html
+<input sync="app.sharedTitle" />
+```
+
+ชนิดค่าที่ sync อ่าน:
+
+- checkbox เป็น boolean จาก `checked`
+- radio เป็น `value` ของ radio ที่เลือก
+- select multiple เป็น array ของ selected option values
+- number/range แปลงเป็น number หรือ `null` เมื่อว่าง
+- input ปกติและ textarea เป็น string
+
+## Self-closing Component Tag
+
+WebX normalize self-closing component tag ก่อน parse DOM
+
+```html
+<Counter :title="name" />
+```
+
+จะถูกแปลงเป็นรูปแบบเปิดปิด tag เพื่อให้ DOMParser อ่านได้ถูกต้อง
+
+```html
+<Counter :title="name"></Counter>
+```

@@ -1,0 +1,51 @@
+---
+title: WebX
+description: เอกสารหลักของ WebX framework สำหรับสร้าง UI ด้วย vanilla ES modules
+---
+
+WebX เป็น framework ขนาดเล็กที่ทำงานบน vanilla ES modules โดยตรง โครงสร้างหลักคือ component แต่ละตัวมี `app.js`, `template.html` และเลือกมี `style.css` ได้ Runtime จะโหลด component จาก `webx.json`, parse template, bind state, render component ลูก และอัปเดต DOM เฉพาะ binding ที่เกี่ยวข้องเมื่อ state เปลี่ยน
+
+แนวคิดของ WebX คือให้เขียนใกล้กับ HTML/JavaScript ปกติ แต่มี DX แบบ framework:
+
+- `{{ expression }}` สำหรับ interpolation
+- `@click` และ event directive แบบ action
+- `:title`, `:class`, `:show` และ directive ที่รัน expression
+- `sync` สำหรับ two-way binding กับ form element
+- `props` ตรวจ type ด้วย Zod และโชว์ error overlay
+- reactive `data`, `props`, `stores` ผ่าน Proxy
+- `watch` สำหรับ data, props และ store
+- `<for>`, `<if>`, `<elseif>`, `<else>` พร้อม transition
+- scoped CSS แบบเปลี่ยนชื่อ class ไม่ใช่เพิ่ม custom attribute
+- `onMounted`, `onUnmounted`
+- `onCfx` และ `cfx.call` สำหรับ FiveM NUI
+
+<Cards>
+  <Card title="เริ่มติดตั้ง" description="หน้าคำสั่งเริ่มต้นถูกเว้นว่างไว้เพื่อเติม CLI ภายหลัง" href="/docs/getting-started" />
+  <Card title="Component" description="โครงสร้าง app.js, template.html, props, methods และ component ลูก" href="/docs/components" />
+  <Card title="Template" description="Interpolation, sync, directive และ control flow" href="/docs/templates" />
+  <Card title="CFX / NUI" description="รับ message event และเรียก callback ไปยัง FiveM resource" href="/docs/cfx" />
+</Cards>
+
+## Runtime Flow
+
+เมื่อหน้าเว็บโหลด `web/wbx/app.js` จะอ่าน `webx.json`, validate config ด้วย Zod, โหลด component ทั้งหมดที่ประกาศไว้ แล้ว render component หลักลงใน element `#app`
+
+```json
+{
+  "main": "home",
+  "components": ["counter"]
+}
+```
+
+ใน component หลักสามารถเรียก component ลูกด้วยชื่อ template ที่ component ลูก export ไว้ เช่น `<Counter :title="name" />`
+
+## Syntax Guideline
+
+WebX ใช้ prefix ตามหน้าที่ของสิ่งที่เขียน:
+
+- `@` ใช้กับ action/event เช่น `@click`, `@keyup.enter`
+- `:` ใช้กับ expression หรือ JavaScript binding เช่น `:title`, `:show`, `:class`
+- `sync` ใช้กับ input, select, textarea สำหรับ two-way binding
+- control flow ใช้ tag เฉพาะ เช่น `<for>`, `<if>`, `<elseif>`, `<else>`
+
+Legacy syntax บางส่วนอย่าง `w-model`, `w-for`, `w-if` ยังมี fallback ใน runtime แต่เอกสารนี้ใช้ public API แบบใหม่เป็นหลัก

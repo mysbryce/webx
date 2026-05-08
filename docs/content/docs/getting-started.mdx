@@ -1,0 +1,118 @@
+---
+title: Getting Started
+description: เริ่มติดตั้งและรัน WebX project
+---
+
+หน้านี้เตรียมไว้สำหรับคำสั่ง CLI และคำสั่งติดตั้งในอนาคต ตามที่กำหนดไว้ตอนนี้ให้เว้น command จริงไว้ก่อน
+
+## Install
+
+```bash
+
+```
+
+## Create Project
+
+```bash
+
+```
+
+## Development
+
+```bash
+
+```
+
+## Build
+
+```bash
+
+```
+
+## Minimal HTML
+
+หน้า HTML ต้องมี root element สำหรับ render และ import runtime หลักของ WebX ผ่าน ES module
+
+```html
+<div id="app"></div>
+
+<script type="module" src="./wbx/app.js"></script>
+```
+
+ในโปรเจกต์ตัวอย่างใช้ import map เพื่อให้ runtime import path แบบ alias ได้
+
+```html
+<script type="importmap">
+{
+  "imports": {
+    "@components/": "./components/",
+    "@directives/": "./directives/",
+    "@stores/": "./stores/",
+    "@wbx/": "./wbx/",
+    "zod": "./wbx/lib/zod.min.js"
+  }
+}
+</script>
+```
+
+## Configure `webx.json`
+
+`webx.json` บอก runtime ว่า component ไหนเป็นหน้าหลัก และ component ใดต้อง register เพื่อเรียกใช้ใน template
+
+```json
+{
+  "main": "home",
+  "components": ["counter"]
+}
+```
+
+- `main` คือชื่อ folder component หลักใน `web/components`
+- `components` คือรายชื่อ component ลูกที่ต้องการ register
+- runtime จะเพิ่ม `main` เข้าไปตอน validate เพื่อโหลด component หลักด้วย
+
+## First Component
+
+สร้าง folder component โดยใช้ชื่อ lower-case เช่น `web/components/home`
+
+```txt
+web/components/home/
+  app.js
+  template.html
+  style.css
+```
+
+`app.js`
+
+```js
+export default {
+  template: 'Home',
+  data: {
+    title: 'Hello WebX'
+  },
+  method: {
+    rename() {
+      this.data.title = 'Updated title'
+    }
+  }
+}
+```
+
+`template.html`
+
+```html
+<template>
+  <main class="home">
+    <h1>{{ title }}</h1>
+    <button @click="rename">Rename</button>
+  </main>
+</template>
+```
+
+`style.css`
+
+```css
+.home {
+  max-width: 720px;
+  margin: 32px auto;
+}
+```

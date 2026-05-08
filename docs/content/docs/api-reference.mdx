@@ -1,0 +1,184 @@
+---
+title: API Reference
+description: อ้างอิง options, directives, store และ runtime APIs ของ WebX
+---
+
+หน้านี้สรุป API หลักที่ใช้ใน WebX component และ template
+
+## Component Options
+
+```js
+export default {
+  template: 'ComponentName',
+  props: {},
+  data: {},
+  stores: {},
+  method: {},
+  methods: {},
+  directives: {},
+  watch: {},
+  onCfx: {},
+  onMounted() {},
+  onUnmounted() {}
+}
+```
+
+### `template`
+
+ชื่อ tag ที่ parent component ใช้เรียก
+
+```js
+template: 'Counter'
+```
+
+### `props`
+
+Zod schema แบบ object หรือ Zod object schema
+
+```js
+props: {
+  title: z.string()
+}
+```
+
+### `data`
+
+object หรือ function ที่ return object
+
+```js
+data: {
+  count: 0
+}
+```
+
+### `stores`
+
+object ของ store alias
+
+```js
+stores: {
+  app: useAppStore
+}
+```
+
+### `method` / `methods`
+
+object ของ functions ที่ runtime bind `this`
+
+```js
+method: {
+  increment() {
+    this.data.count++
+  }
+}
+```
+
+### `watch`
+
+object mapping path ไป handler function หรือ method name
+
+```js
+watch: {
+  count(value, previousValue) {},
+  'props.title'(value, previousValue) {},
+  'app.sharedCount'(value, previousValue) {}
+}
+```
+
+### `directives`
+
+directive เฉพาะ component
+
+```js
+directives: {
+  focus(el) {
+    el.focus()
+  }
+}
+```
+
+### `onCfx`
+
+CFX/NUI event handlers
+
+```js
+onCfx: {
+  'app:updateTitle': {
+    schema: z.string(),
+    handler(title) {}
+  }
+}
+```
+
+## Template Syntax
+
+| Syntax | Purpose |
+| --- | --- |
+| `{{ expression }}` | text interpolation |
+| `@click="handler"` | event/action |
+| `@keyup.enter="handler"` | event with modifier |
+| `:title="expression"` | dynamic prop/attribute |
+| `:class="expression"` | dynamic class |
+| `:style="expression"` | dynamic style |
+| `:show="expression"` | toggle display |
+| `:text="expression"` | set textContent |
+| `:html="expression"` | set innerHTML |
+| `:ref="'name'"` | register element ref |
+| `sync="path"` | two-way form binding |
+| `<for data="items" as="item" key="item.id">` | list rendering |
+| `<if data="condition">` | conditional rendering |
+| `<elseif data="condition">` | conditional branch |
+| `<else>` | fallback branch |
+
+## Store API
+
+```js
+const store = createStore((set, get) => ({
+  count: 0,
+  increment() {
+    set((state) => ({ count: state.count + 1 }))
+  }
+}))
+```
+
+Methods:
+
+- `store.setState(partial)`
+- `store.getState()`
+- `store.subscribe(callback)`
+- `store.watch(callback)`
+
+Callback signature:
+
+```js
+(key, value, previousValue) => {}
+```
+
+## CFX API
+
+```js
+await this.cfx.call(eventName, data, mockData)
+await this.cfx.fetchNui(eventName, data, mockData)
+```
+
+`fetchNui` เป็น alias ของ `call`
+
+## Instance API
+
+ใน method/hook:
+
+```js
+this.data
+this.props
+this.refs
+this.cfx
+this.watch(path, callback)
+this.update(changedKey)
+```
+
+Store alias จะถูกใส่บน instance ด้วย:
+
+```js
+this.app.sharedTitle
+this.app.incrementSharedCount()
+```

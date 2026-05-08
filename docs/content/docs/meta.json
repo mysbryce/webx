@@ -1,0 +1,21 @@
+{
+  "title": "WebX",
+  "pages": [
+    "index",
+    "getting-started",
+    "project-structure",
+    "components",
+    "templates",
+    "directives",
+    "control-flow",
+    "reactivity",
+    "props",
+    "stores",
+    "styles",
+    "lifecycle",
+    "cfx",
+    "errors-debugging",
+    "api-reference",
+    "examples"
+  ]
+}

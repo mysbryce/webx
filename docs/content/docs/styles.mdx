@@ -1,0 +1,119 @@
+---
+title: Styling
+description: ใช้ style.css, embedded style scoped และ scoped CSS แบบเปลี่ยนชื่อ class
+---
+
+WebX รองรับ style สองแบบใน component:
+
+- `style.css` แยกไฟล์ข้าง `app.js` และ `template.html`
+- `<style scoped>` ใน `template.html`
+
+ทั้งสองแบบถูกนำมารวมกันแล้ว process ผ่าน scoped CSS runtime
+
+## External `style.css`
+
+```txt
+web/components/home/
+  app.js
+  template.html
+  style.css
+```
+
+```css
+.home {
+  max-width: 720px;
+  margin: 32px auto;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+}
+```
+
+## Embedded Scoped Style
+
+```html
+<template>
+  <section class="panel">
+    <h1>{{ title }}</h1>
+  </section>
+</template>
+
+<style scoped>
+.panel {
+  border: 1px solid #d0d5dd;
+}
+</style>
+```
+
+## Class-based Scope
+
+WebX ไม่ใช้ custom attribute แบบ `data-v-*` แต่เปลี่ยนชื่อ class และเพิ่ม scope class ภายใน component
+
+ตัวอย่าง selector:
+
+```css
+.home .controls button {
+  border: 1px solid #d0d5dd;
+}
+```
+
+จะถูก rewrite เป็น class ที่ผูกกับ component name เช่น:
+
+```css
+.home__wbx_home .controls__wbx_home button.wbx-scope-home {
+  border: 1px solid #d0d5dd;
+}
+```
+
+Element ใน template จะถูกเปลี่ยน class ให้ตรงกับ CSS ที่ rewrite แล้ว
+
+## Global Selector
+
+ใช้ `:global(...)` ถ้าต้องการ style ข้าม scope
+
+```css
+:global(body) {
+  margin: 0;
+}
+```
+
+## Keyframes and Font Face
+
+`@keyframes` และ `@font-face` จะไม่ถูก scope
+
+```css
+.flow-active {
+  animation: flow-in 220ms ease-out both;
+}
+
+@keyframes flow-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+```
+
+## Transition Class Mapping
+
+เมื่อใช้ control flow transition เช่น `transition="flow"` runtime จะหา class จาก scoped class map ด้วย ดังนั้นกำหนด `.flow-active` และ `.flow-off` ใน `style.css` ได้ตามปกติ
+
+```html
+<if data="isOpen" transition="flow">
+  <div class="panel">Open</div>
+</if>
+```
+
+```css
+.flow-active {
+  animation: flow-in 200ms ease-out both;
+}
+
+.flow-off {
+  animation: flow-out 200ms ease-in both;
+}
+```

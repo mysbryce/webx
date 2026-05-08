@@ -1,0 +1,140 @@
+---
+title: CFX and NUI
+description: ใช้ onCfx เพื่อรับ message event และ cfx.call เพื่อ fetch ไปยัง FiveM resource
+---
+
+WebX มี CFX helper สำหรับ FiveM NUI อยู่ใน namespace `cfx`
+
+- `onCfx` รับ event จาก `window.addEventListener('message', ...)`
+- `cfx.call(eventName, data, mockData)` POST ไปยัง resource callback
+- `cfx.fetchNui` เป็น alias ของ `cfx.call`
+
+Runtime สร้าง message listener เพียงตัวเดียว แล้ว dispatch ตาม `event.data.type`
+
+## Receive NUI Messages
+
+ใน component กำหนด `onCfx`
+
+```js
+import z from 'zod'
+
+export default {
+  onCfx: {
+    'app:updateTitle': {
+      schema: z.string(),
+      handler(newTitle) {
+        console.log('Shared title changed to:', newTitle)
+        this.data.name = newTitle
+      }
+    },
+
+    'app:updateList': {
+      schema: z.array(z.object({
+        id: z.number(),
+        name: z.string()
+      })),
+      handler(newList) {
+        this.data.list = newList
+      }
+    }
+  }
+}
+```
+
+Payload ที่คาดหวัง:
+
+```js
+window.postMessage({
+  type: 'app:updateTitle',
+  data: 'New title'
+})
+```
+
+## Handler Forms
+
+ใช้ function ตรง ๆ:
+
+```js
+export default {
+  onCfx: {
+    'app:ping'(data) {
+      console.log(data)
+    }
+  }
+}
+```
+
+ใช้ชื่อ method:
+
+```js
+export default {
+  method: {
+    updateTitle(title) {
+      this.data.name = title
+    }
+  },
+  onCfx: {
+    'app:updateTitle': 'updateTitle'
+  }
+}
+```
+
+ใช้ object พร้อม schema:
+
+```js
+export default {
+  onCfx: {
+    'app:updateTitle': {
+      schema: z.string(),
+      handler(title) {
+        this.data.name = title
+      }
+    }
+  }
+}
+```
+
+ถ้า schema validate ไม่ผ่าน WebX จะแสดง error overlay ด้วย title `WebX CFX Event Error`
+
+## Call NUI Callback
+
+เรียก callback จาก component ด้วย `this.cfx.call`
+
+```js
+export default {
+  method: {
+    async fetchCounter() {
+      const response = await this.cfx.call('counter:getValue', {
+        title: this.props.title,
+        count: this.data.count
+      }, {
+        ok: true,
+        value: this.data.count
+      })
+
+      console.log('CFX response:', response)
+    }
+  }
+}
+```
+
+ใน FiveM runtime จะ POST ไปที่:
+
+```txt
+https://<resourceName>/<eventName>
+```
+
+resource name มาจาก `window.GetParentResourceName()` หากไม่มีจะ fallback เป็น `nui-frame-app`
+
+## Mock Data in Browser
+
+ถ้าอยู่ใน dev/browser mode และส่ง `mockData` มา `cfx.call` จะ return mock data ทันทีโดยไม่ fetch
+
+```js
+await this.cfx.call('counter:getValue', payload, {
+  ok: true,
+  value: 1
+})
+```
+
+เหมาะสำหรับทดสอบ UI ใน browser โดยยังไม่ต้องรันใน FiveM
