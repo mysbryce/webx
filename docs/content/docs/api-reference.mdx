@@ -182,3 +182,38 @@ Store alias จะถูกใส่บน instance ด้วย:
 this.app.sharedTitle
 this.app.incrementSharedCount()
 ```
+
+## CLI
+
+สร้างโปรเจกต์จาก GitHub template:
+
+```bash
+bunx webx create my-app
+```
+
+Options:
+
+| Option | Description |
+| --- | --- |
+| `--repo <url>` | Git repository สำหรับ template |
+| `--template <url>` | alias ของ `--repo` |
+| `--branch <name>` | branch ที่ต้องการ clone |
+| `--no-install` | clone อย่างเดียว ไม่ install dependency |
+| `--keep-git` | เก็บ `.git` ของ template ไว้ |
+| `--pm <name>` | package manager เช่น `bun` หรือ `npm` |
+
+sync component manifest:
+
+```bash
+bunx webx generate
+```
+
+Options:
+
+| Option | Description |
+| --- | --- |
+| `--main <component>` | กำหนด main component |
+| `--web <path>` | path ของ web dir ค่าเริ่มต้นคือ `web` |
+| `--components <path>` | path ของ components dir ภายใต้ web dir |
+| `--config <file>` | manifest file ค่าเริ่มต้นคือ `webx.json` |
+| `--dry-run` | แสดงผลโดยไม่เขียนไฟล์ |

@@ -1,32 +1,113 @@
 ---
 title: Getting Started
-description: เริ่มติดตั้งและรัน WebX project
+description: เริ่มติดตั้ง สร้างโปรเจกต์ และ sync component manifest ด้วย WebX CLI
 ---
 
-หน้านี้เตรียมไว้สำหรับคำสั่ง CLI และคำสั่งติดตั้งในอนาคต ตามที่กำหนดไว้ตอนนี้ให้เว้น command จริงไว้ก่อน
-
-## Install
-
-```bash
-
-```
+WebX CLI ออกแบบให้เรียกผ่าน `bunx webx` ได้โดยตรง มีคำสั่งหลักสำหรับสร้างโปรเจกต์จาก GitHub template และ sync component list เข้า `webx.json`
 
 ## Create Project
 
 ```bash
-
+bunx webx create my-app
 ```
 
-## Development
+คำสั่งนี้จะ:
+
+- clone WebX template จาก GitHub
+- ลบ `.git` ของ template ออกเพื่อให้เริ่ม repo ใหม่ได้สะอาด
+- หา `package.json` ในโปรเจกต์และโฟลเดอร์ย่อย
+- รัน dependency install ให้อัตโนมัติด้วย `bun` ถ้ามี หรือ fallback เป็น `npm`
+
+## Create From Another Repository
 
 ```bash
-
+bunx webx create my-app --repo https://github.com/owner/repo.git
 ```
 
-## Build
+ระบุ branch:
 
 ```bash
+bunx webx create my-app --repo https://github.com/owner/repo.git --branch main
+```
 
+ข้าม install:
+
+```bash
+bunx webx create my-app --no-install
+```
+
+เก็บ `.git` จาก template ไว้:
+
+```bash
+bunx webx create my-app --keep-git
+```
+
+กำหนด package manager:
+
+```bash
+bunx webx create my-app --pm bun
+bunx webx create my-app --pm npm
+```
+
+## Generate Component Manifest
+
+หลังเพิ่มหรือลบ component ใน `web/components` ให้รัน:
+
+```bash
+bunx webx generate
+```
+
+คำสั่งนี้จะ scan folder ใน `web/components` ที่มีทั้ง `app.js` และ `template.html` แล้วแก้ `web/webx.json` อัตโนมัติ
+
+ตัวอย่างผลลัพธ์:
+
+```txt
+Components
+  counter (component)
+  home (main)
+```
+
+และจะเขียน config:
+
+```json
+{
+    "main": "home",
+    "components": [
+        "counter"
+    ]
+}
+```
+
+## Choose Main Component
+
+ถ้าต้องการกำหนด main เอง:
+
+```bash
+bunx webx generate --main home
+```
+
+ถ้าไม่กำหนด CLI จะใช้ค่าเดิมใน `webx.json` ก่อน ถ้าไม่มีจะเลือก `home` ถ้าพบ component ชื่อนี้ ไม่อย่างนั้นจะเลือก component แรกตามลำดับชื่อ
+
+## Dry Run
+
+ดู component และ manifest ที่จะเขียนโดยไม่แก้ไฟล์:
+
+```bash
+bunx webx generate --dry-run
+```
+
+## Custom Paths
+
+ถ้าโครงสร้างโปรเจกต์ไม่ใช้ `web` เป็นโฟลเดอร์หลัก:
+
+```bash
+bunx webx generate --web apps/nui
+```
+
+ถ้า component อยู่คนละ path ภายใน web dir:
+
+```bash
+bunx webx generate --components ui/components
 ```
 
 ## Minimal HTML
