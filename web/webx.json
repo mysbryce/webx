@@ -1,4 +1,6 @@
 {
     "main": "home",
-    "components": ["counter"]
+    "components": [
+        "counter"
+    ]
 }

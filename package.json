@@ -1,0 +1,26 @@
+{
+  "name": "webx",
+  "version": "0.0.1",
+  "description": "Vanilla ES module UI framework and CLI for WebX projects.",
+  "private": false,
+  "type": "module",
+  "license": "GPL-3.0-only",
+  "author": "mysbryce",
+  "bin": {
+    "webx": "./bin/webx.js"
+  },
+  "scripts": {
+    "webx": "node ./bin/webx.js"
+  },
+  "files": [
+    "bin",
+    "client",
+    "server",
+    "web",
+    "fxmanifest.lua",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  }
+}
