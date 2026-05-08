@@ -185,22 +185,11 @@ this.app.incrementSharedCount()
 
 ## CLI
 
-สร้างโปรเจกต์จาก GitHub template:
+สร้างโปรเจกต์:
 
 ```bash
 bunx webx create my-app
 ```
-
-Options:
-
-| Option | Description |
-| --- | --- |
-| `--repo <url>` | Git repository สำหรับ template |
-| `--template <url>` | alias ของ `--repo` |
-| `--branch <name>` | branch ที่ต้องการ clone |
-| `--no-install` | clone อย่างเดียว ไม่ install dependency |
-| `--keep-git` | เก็บ `.git` ของ template ไว้ |
-| `--pm <name>` | package manager เช่น `bun` หรือ `npm` |
 
 sync component manifest:
 
@@ -208,12 +197,16 @@ sync component manifest:
 bunx webx generate
 ```
 
-Options:
+เลือก main component:
+
+```bash
+bunx webx generate --main home
+```
+
+Options ที่ใช้บ่อย:
 
 | Option | Description |
 | --- | --- |
+| `--no-install` | ใช้กับ `create` เพื่อข้าม dependency install |
 | `--main <component>` | กำหนด main component |
-| `--web <path>` | path ของ web dir ค่าเริ่มต้นคือ `web` |
-| `--components <path>` | path ของ components dir ภายใต้ web dir |
-| `--config <file>` | manifest file ค่าเริ่มต้นคือ `webx.json` |
 | `--dry-run` | แสดงผลโดยไม่เขียนไฟล์ |
