@@ -1,5 +1,7 @@
 # WebX 5M
 
+![WebX 5M logo](docs/public/webx-logo.svg)
+
 WebX 5M is a lightweight vanilla ES module UI framework and FiveM NUI boilerplate. It gives you component files, reactive state, template bindings, scoped CSS, stores, lifecycle hooks, and CFX/NUI helpers without a build step for the runtime UI.
 
 ## Features

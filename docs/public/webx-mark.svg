@@ -1,0 +1,9 @@
+<svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">WebX Mark</title>
+  <desc id="desc">A black and white angular X mark for WebX.</desc>
+  <rect width="160" height="160" rx="32" fill="#0A0A0A"/>
+  <path d="M40 40H73L91 64L109 40H140L106 80L140 120H107L89 96L71 120H40L74 80L40 40Z" fill="white"/>
+  <path d="M38 34L122 126" stroke="white" stroke-width="10" stroke-linecap="round"/>
+  <path d="M122 34L38 126" stroke="white" stroke-width="10" stroke-linecap="round"/>
+  <rect x="18" y="18" width="124" height="124" rx="24" stroke="white" stroke-opacity="0.18" stroke-width="2"/>
+</svg>

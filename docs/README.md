@@ -1,5 +1,7 @@
 # WebX 5M Documentation
 
+![WebX 5M logo](public/webx-logo.svg)
+
 This is the documentation site for WebX 5M. It is built with Next.js and Fumadocs, and the content lives in `content/docs`.
 
 ## Development

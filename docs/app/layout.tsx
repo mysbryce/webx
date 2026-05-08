@@ -1,6 +1,7 @@
 import { RootProvider } from 'fumadocs-ui/provider/next';
 import './global.css';
 import localFont from 'next/font/local';
+import type { Metadata } from 'next';
 
 const lineSeedSans = localFont({
   variable: '--font-line-seed-sans',
@@ -28,6 +29,16 @@ const lineSeedSans = localFont({
     },
   ],
 });
+
+export const metadata: Metadata = {
+  title: 'WebX 5M',
+  description: 'Documentation for the WebX 5M vanilla module framework.',
+  icons: {
+    icon: '/webx-mark.svg',
+    shortcut: '/webx-mark.svg',
+    apple: '/webx-mark.svg',
+  },
+};
 
 export default function Layout({ children }: LayoutProps<'/'>) {
   return (
