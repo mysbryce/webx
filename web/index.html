@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webx Framework</title>
+    <script type="importmap">
+        {
+            "imports": {
+                "@components/": "./components/",
+                "@directives/": "./directives/",
+                "@stores/": "./stores/",
+                "@wbx/": "./wbx/",
+                "zod": "./wbx/lib/zod.min.js"
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="app"></div>
+    
+    <script type="module" src="./wbx/app.js"></script>
+</body>
+</html>

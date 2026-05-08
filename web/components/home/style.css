@@ -1,0 +1,91 @@
+.home {
+    max-width: 720px;
+    margin: 32px auto;
+    font-family: Arial, sans-serif;
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 18px 0;
+}
+
+.sync-panel {
+    display: grid;
+    gap: 10px;
+    margin: 18px 0;
+    padding: 14px;
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+}
+
+.sync-panel label {
+    display: grid;
+    gap: 6px;
+}
+
+.sync-panel input,
+.sync-panel select,
+.sync-panel textarea {
+    border: 1px solid #d0d5dd;
+    border-radius: 6px;
+    padding: 8px 10px;
+}
+
+.sync-panel textarea {
+    min-height: 72px;
+    resize: vertical;
+}
+
+.controls button {
+    border: 1px solid #d0d5dd;
+    border-radius: 6px;
+    background: #ffffff;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.demo-list {
+    display: grid;
+    gap: 8px;
+    margin: 16px 0;
+}
+
+.demo-item,
+.state-panel {
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    padding: 12px;
+    background: #ffffff;
+}
+
+.flow-active {
+    animation: flow-in 220ms ease-out both;
+}
+
+.flow-off {
+    animation: flow-out 220ms ease-in both;
+}
+
+@keyframes flow-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes flow-out {
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(8px) scale(.98);
+    }
+}

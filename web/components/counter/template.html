@@ -1,0 +1,10 @@
+<template>
+    <div class="counter">
+        <h1>{{ title }}</h1>
+        <p>{{ count }}</p>
+        <p>Shared count: {{ app.sharedCount }}</p>
+        <button @click="increment">Increment</button>
+        <button @click="incrementShared">Increment shared</button>
+        <button @click="fetchCounter">Call CFX</button>
+    </div>
+</template>

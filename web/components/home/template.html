@@ -1,0 +1,80 @@
+<template>
+    <div class="home">
+        <h1>Home</h1>
+        <p>Welcome to the home page! Current phase: {{ phase }}</p>
+        <p>Local title: {{ name }}</p>
+        <p>Shared title: {{ app.sharedTitle }}</p>
+        <p>Shared count: {{ app.sharedCount }}</p>
+
+        <Counter :title="name" />
+        <Counter :title="app.sharedTitle" />
+
+        <div class="sync-panel">
+            <label>
+                Local title
+                <input sync="name" />
+            </label>
+
+            <label>
+                Shared title
+                <input sync="app.sharedTitle" />
+            </label>
+
+            <label>
+                Phase
+                <select sync="phase">
+                    <option value="active">active</option>
+                    <option value="waiting">waiting</option>
+                    <option value="off">off</option>
+                </select>
+            </label>
+
+            <label>
+                <input type="checkbox" sync="listVisible" />
+                Show list
+            </label>
+
+            <label>
+                Note
+                <textarea sync="note"></textarea>
+            </label>
+
+            <p>Note preview: {{ note }}</p>
+        </div>
+
+        <div class="controls">
+            <button @click="renameLocalTitle">Toggle local title</button>
+            <button @click="renameSharedTitle">Toggle shared title</button>
+            <button @click="incrementSharedCount">Increment shared count</button>
+            <button @click="nextPhase">Next phase</button>
+            <button @click="toggleList">Toggle list</button>
+            <button @click="addItem">Add item</button>
+            <button @click="removeItem">Remove item</button>
+        </div>
+
+        <div class="demo-list">
+            <for data="listVisible ? list : []" as="item" key="item.id" transition="flow" transition-duration="220">
+                <div class="demo-item">ID ({{ item.id }}) {{ item.name }}</div>
+            </for>
+        </div>
+
+        <if data="phase === 'active'" transition="flow" transition-duration="220">
+            <div class="state-panel">
+                <strong>Active</strong>
+                <p>The active branch is mounted with animation.</p>
+            </div>
+        </if>
+        <elseif data="phase === 'waiting'" transition="flow" transition-duration="220">
+            <div class="state-panel">
+                <strong>Waiting</strong>
+                <p>The elseif branch takes over when phase changes.</p>
+            </div>
+        </elseif>
+        <else transition="flow" transition-duration="220">
+            <div class="state-panel">
+                <strong>Off</strong>
+                <p>The else branch renders when no condition matches.</p>
+            </div>
+        </else>
+    </div>
+</template>
