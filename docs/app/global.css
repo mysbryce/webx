@@ -1,0 +1,55 @@
+@import 'tailwindcss';
+@import 'fumadocs-ui/css/neutral.css';
+@import 'fumadocs-ui/css/preset.css';
+
+@theme {
+  --font-sans: var(--font-line-seed-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  background: #ffffff;
+  color: #0a0a0a;
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+html > body[data-scroll-locked] {
+  margin-right: 0px !important;
+  --removed-body-scroll-bar-size: 0px !important;
+}
+
+body {
+  font-family: var(--font-line-seed-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+::selection {
+  background: #0a0a0a;
+  color: #ffffff;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+.dark body {
+  background: #000000;
+  color: #ffffff;
+}
+
+.fd-card,
+.fd-steps h3,
+.fd-tabs {
+  border-color: color-mix(in srgb, currentColor 18%, transparent);
+}
+
+code,
+pre {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
